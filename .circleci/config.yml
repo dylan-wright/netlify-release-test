@@ -19,4 +19,4 @@ workflows:
               tags:
                 only: /^v.*/
               branches:
-                ignure: /.*/
+                ignore: /.*/
