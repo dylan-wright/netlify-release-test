@@ -51,17 +51,19 @@ const makeNetlifyRequest = (method, url) =>
     taggedDeploy = deploys.find(deploy =>
       deploy.context === 'branch-deploy' &&
       deploy.branch === tagName &&
-      deploy.state === 'ready'
+      deploy.state in ['failed', 'ready'],
     );
-
   } while (!taggedDeploy);
+
+  if (taggedDeploy === 'failed') {
+    console.error('Build failed. Exiting.');
+    process.exit(1);
+  }
 
   const { id: deployId } = taggedDeploy;
 
-  const res = await makeNetlifyRequest(
+  await makeNetlifyRequest(
     'POST',
     `${netlifyApiBase}/sites/${siteId}/deploys/${deployId}/restore`,
   );
-
-  console.log(res);
 })();
