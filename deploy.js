@@ -32,15 +32,23 @@ if (!netlifyApiKey) {
 
   const { id } = site;
 
-  const deploys = await request({
-    method: 'GET',
-    headers: {
-      Authorization: `Bearer ${netlifyApiKey}`,
-    },
-    url: `${netlifyApiBase}/sites/${id}/deploys`,
-    json: true,
-  });
+  let taggedDeploy;
 
-  const taggedDeploy = deploys.filter(deploy => deploy.title === 'tag' && deploy.branch === tagName);
+  do {
+    await new Promise(resolve, setTimeout(resolve, 5000));
+    console.log('trying');
+
+    const deploys = await request({
+      method: 'GET',
+      headers: {
+        Authorization: `Bearer ${netlifyApiKey}`,
+      },
+      url: `${netlifyApiBase}/sites/${id}/deploys`,
+      json: true,
+    });
+
+    taggedDeploy = deploys.find(deploy => deploy.title === 'tag' && deploy.branch === tagName);
+
+  } while (!taggedDeploy);
   console.log(taggedDeploy);
 })();
