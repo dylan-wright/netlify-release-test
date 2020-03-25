@@ -47,8 +47,12 @@ if (!netlifyApiKey) {
       json: true,
     });
 
-    taggedDeploy = deploys.find(deploy => deploy.context === 'branch-deploy' && deploy.branch === tagName);
+    taggedDeploy = deploys.find(deploy =>
+      deploy.context === 'branch-deploy' &&
+      deploy.branch === tagName &&
+      deploy.state === 'ready'
+    );
 
-  } while (!taggedDeploy && taggedDeploy.state !== 'ready');
+  } while (!taggedDeploy);
   console.log(taggedDeploy);
 })();
