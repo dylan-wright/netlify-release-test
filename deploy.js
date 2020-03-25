@@ -18,15 +18,21 @@ if (!netlifyApiKey) {
   process.exit(1);
 }
 
-(async () => {
-  const sites = await request({
-    method: 'GET',
+const makeNetlifyRequest = (method, url) =>
+  request({
+    method,
+    url,
     headers: {
       Authorization: `Bearer ${netlifyApiKey}`,
     },
-    url: `${netlifyApiBase}/sites`,
     json: true,
   });
+
+(async () => {
+  const sites = await makeNetlifyRequest(
+    'GET',
+    `${netlifyApiBase}/sites`,
+  );
 
   const site = sites.find(site => site.name === 'optimistic-lewin-16526a');
 
@@ -37,14 +43,10 @@ if (!netlifyApiKey) {
   do {
     await new Promise(resolve => setTimeout(resolve, 5000));
 
-    const deploys = await request({
-      method: 'GET',
-      headers: {
-        Authorization: `Bearer ${netlifyApiKey}`,
-      },
-      url: `${netlifyApiBase}/sites/${siteId}/deploys`,
-      json: true,
-    });
+    const deploys = await makeNetlifyRequest(
+      'GET',
+      `${netlifyApiBase}/sites/${siteId}/deploys`,
+    );
 
     taggedDeploy = deploys.find(deploy =>
       deploy.context === 'branch-deploy' &&
@@ -56,13 +58,10 @@ if (!netlifyApiKey) {
 
   const { id: deployId } = taggedDeploy;
 
-  const res = await request({
-    method: 'POST',
-    headers: {
-      Authorization: `Bearer ${netlifyApiKey}`,
-    },
-    url: `${netlifyApiBase}/sites/${siteId}/deploys/${deployId}/restore`,
-  });
+  const res = await makeNetlifyRequest(
+    'POST',
+    `${netlifyApiBase}/sites/${siteId}/deploys/${deployId}/restore`,
+  );
 
   console.log(res);
 })();
