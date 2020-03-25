@@ -35,7 +35,7 @@ if (!netlifyApiKey) {
   let taggedDeploy;
 
   do {
-    await new Promise(resolve, setTimeout(resolve, 5000));
+    await new Promise(resolve => setTimeout(resolve, 5000));
     console.log('trying');
 
     const deploys = await request({
