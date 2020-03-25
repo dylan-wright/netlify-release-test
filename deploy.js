@@ -51,11 +51,11 @@ const makeNetlifyRequest = (method, url) =>
     taggedDeploy = deploys.find(deploy =>
       deploy.context === 'branch-deploy' &&
       deploy.branch === tagName &&
-      deploy.state in ['failed', 'ready'],
+      deploy.state in ['error', 'ready'],
     );
   } while (!taggedDeploy);
 
-  if (taggedDeploy === 'failed') {
+  if (taggedDeploy === 'error') {
     console.error('Build failed. Exiting.');
     process.exit(1);
   }
