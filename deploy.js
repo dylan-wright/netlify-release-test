@@ -30,20 +30,19 @@ if (!netlifyApiKey) {
 
   const site = sites.find(site => site.name === 'optimistic-lewin-16526a');
 
-  const { id } = site;
+  const { id: siteId } = site;
 
   let taggedDeploy;
 
   do {
     await new Promise(resolve => setTimeout(resolve, 5000));
-    console.log('trying');
 
     const deploys = await request({
       method: 'GET',
       headers: {
         Authorization: `Bearer ${netlifyApiKey}`,
       },
-      url: `${netlifyApiBase}/sites/${id}/deploys`,
+      url: `${netlifyApiBase}/sites/${siteId}/deploys`,
       json: true,
     });
 
@@ -54,5 +53,16 @@ if (!netlifyApiKey) {
     );
 
   } while (!taggedDeploy);
-  console.log(taggedDeploy);
+
+  const { id: deployId } = taggedDeploy;
+
+  const res = await request({
+    method: 'POST',
+    headers: {
+      Authorization: `Bearer ${netlifyApiKey}`,
+    },
+    url: `${netlifyApiBase}/sites/${siteId}/deploys/${deployId}/restore`,
+  });
+
+  console.log(res);
 })();
